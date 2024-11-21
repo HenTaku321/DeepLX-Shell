@@ -19,6 +19,7 @@ type DeepLXResp struct {
 	ID           int      `json:"ID"`
 	Data         string   `json:"data"`
 	Alternatives []string `json:"alternatives"`
+	Message      string   `json:"message"`
 }
 
 type DeepLXReq struct {
@@ -112,6 +113,9 @@ func transToEN(sourceText string) error {
 		return err
 	}
 
+	if dlxResp.Code != 200 {
+		return errors.New(dlxResp.Message)
+	}
 	fmt.Println(dlxResp.Data)
 	return nil
 }
@@ -129,6 +133,9 @@ func transToZH(sourceText string) error {
 		return err
 	}
 
+	if dlxResp.Code != 200 {
+		return errors.New(dlxResp.Message)
+	}
 	fmt.Println(dlxResp.Data)
 	return nil
 }
@@ -168,6 +175,9 @@ func transToCustomized(sourceText, lang string) error {
 		return err
 	}
 
+	if dlxResp.Code != 200 {
+		return errors.New(dlxResp.Message)
+	}
 	fmt.Println(dlxResp.Data)
 	return nil
 }
@@ -210,6 +220,9 @@ func transFile(filePath, lang string) error {
 		return err
 	}
 
+	if dlxResp.Code != 200 {
+		return errors.New(dlxResp.Message)
+	}
 	fmt.Println(dlxResp.Data)
 	return nil
 }
@@ -260,7 +273,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-	} else { //其他标志
+	} else { //空标志
 		scanner := bufio.NewScanner(os.Stdin)
 		for scanner.Scan() {
 			err := transToCustomized(scanner.Text(), *lang)
