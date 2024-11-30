@@ -72,9 +72,10 @@ func setEnv() {
 func parseDeepLX(sourceText, sourceLang, targetLang string) ([]byte, error) {
 	reqBody, err := json.Marshal(DeepLXReq{
 		Text:       sourceText,
-		SourceLang: sourceLang,
-		TargetLang: targetLang,
+		SourceLang: strings.ToUpper(sourceLang),
+		TargetLang: strings.ToUpper(targetLang),
 	})
+
 	if err != nil {
 		return nil, err
 	}
@@ -141,7 +142,7 @@ func transToZH(sourceText string) error {
 }
 
 var (
-	langCode               = regexp.MustCompile("[A-Z]{2}:[A-Z]{2}(?:-(?:[A-Z]{2}|[A-Z]{4}))?$")
+	langCode               = regexp.MustCompile("^[a-zA-Z]{2}:[a-zA-Z]{2}(-[a-zA-Z]{2})?(-[a-zA-Z]{4})?$")
 	targetLangNotSupported = regexp.MustCompile(`Value for 'target_lang' not supported`)
 )
 
@@ -232,21 +233,21 @@ func main() {
 		fmt.Fprintln(os.Stderr, "用法: trans [选项]")
 		fmt.Fprintln(os.Stderr, "-z 将文本翻译为简体中文")
 		fmt.Fprintln(os.Stderr, "-e 将文本翻译成英文")
-		fmt.Fprintln(os.Stderr, "-l 自定义原和目标语言代码(示例: -l EN:ZH, 注意语言代码要大写)")
-		fmt.Fprintln(os.Stderr, "-c 将文本翻译为自定义语言(示例: '-l EN:ZH -c Hello' 或 -c Hello)")
+		fmt.Fprintln(os.Stderr, "-l 自定义原和目标语言代码(示例: -l en:zh")
+		fmt.Fprintln(os.Stderr, "-c 将文本翻译为自定义语言(示例: '-l en:zh -c Hello' 或 -c Hello)")
 		fmt.Fprintln(os.Stderr, "-f 指定文件翻译, 同样支持-l")
 		fmt.Fprintln(os.Stderr, "-h 显示帮助信息\n")
 		fmt.Fprintln(os.Stderr, "无主参数进入循环, 使用-l或cfg中的语言")
 		fmt.Fprintln(os.Stderr, "配置文件格式: \n一行一个, 必填内容:")
 		fmt.Fprintln(os.Stderr, "API=DeepLX的URL")
 		fmt.Fprintln(os.Stderr, "选填内容:")
-		fmt.Fprintln(os.Stderr, "SourceLang=自定义你想要翻译的原语言(如EN, ZH, JA)")
-		fmt.Fprintln(os.Stderr, "TargetLang=自定义你想要翻译的目标语言(如EN, ZH, JA)")
+		fmt.Fprintln(os.Stderr, "SourceLang=自定义你想要翻译的原语言(如en, zh, ja)")
+		fmt.Fprintln(os.Stderr, "TargetLang=自定义你想要翻译的目标语言(同上)")
 	}
 	targetLangIsZH := flag.String("z", "", "将文本翻译为简体中文")
 	targetLangIsEN := flag.String("e", "", "将文本翻译为英文")
-	lang := flag.String("l", "", "指定原和目标语言代码(示例: -l EN:ZH), 如果不填则使用cfg中的自定义语言(示例: -c Hello)")
-	targetLangIsCustomized := flag.String("c", "", "将文本翻译为自定义语言(示例: '-l EN:ZH -c Hello' 或 -c Hello)")
+	lang := flag.String("l", "", "指定原和目标语言代码(示例: -l en:zh), 如果不填则使用cfg中的自定义语言(示例: -c Hello)")
+	targetLangIsCustomized := flag.String("c", "", "将文本翻译为自定义语言(示例: '-l en:zh -c Hello' 或 -c Hello)")
 	targetLangIsFile := flag.String("f", "", "指定文件翻译, 同样支持-l")
 
 	flag.Parse()
